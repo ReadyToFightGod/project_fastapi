@@ -20,6 +20,16 @@ class BooksTable(Base):
     year: Mapped[int]
 
 
+class UsersTable(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_name: Mapped[str]
+    real_name: Mapped[str]
+    email: Mapped[str]
+    password_hash: Mapped[str]
+
+
 async def create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -27,4 +37,4 @@ async def create_tables():
 
 async def delete_tables():
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(Base.metadata.drop_all)

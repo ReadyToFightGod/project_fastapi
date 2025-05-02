@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated, Dict
 
 from app.schemas import Book, BookInDB
-from app.repository import BooksRepository
+from app.repositories.books_repository import BooksRepository
 
 
 books_router = APIRouter(prefix="/books")
