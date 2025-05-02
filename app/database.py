@@ -28,6 +28,7 @@ class UsersTable(Base):
     real_name: Mapped[str]
     email: Mapped[str]
     password_hash: Mapped[str]
+    registration_date: Mapped[str]
 
 
 async def create_tables():

@@ -1,5 +1,5 @@
 # Модель книги с использованием Pydantic
-from datetime import date
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
@@ -19,11 +19,15 @@ class User(BaseModel):
     user_name: str
     real_name: str
     email: EmailStr
+
+
+class UserNew(User):
     password: str
 
 
 class UserInDB(User):
     id: int
-    registration_date: date
+    password_hash: str
+    registration_date: datetime
 
     model_config = ConfigDict(from_attributes=True)
