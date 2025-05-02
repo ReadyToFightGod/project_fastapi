@@ -1,12 +1,12 @@
 # Эндпоинт для добавления книги
-from fastapi import APIRouter, HTTPException, status
-from typing import Dict
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated, Dict
 
 from app.schemas import Book, BookInDB
 from app.repository import BooksRepository
 
 
-router = APIRouter()
+books_router = APIRouter(prefix="/books")
 
 
 # "База данных" - список книг в памяти
@@ -14,8 +14,10 @@ books_db: Dict[int, BookInDB] = {}
 current_id = 1  # Счетчик для генерации ID
 
 
-@router.post("/books", status_code=status.HTTP_201_CREATED)
-async def add_book(book: Book) -> Dict:
+@books_router.post("/", status_code=status.HTTP_201_CREATED)
+async def add_book(
+    book: Annotated[Book, Depends()]
+) -> Dict:
     # global current_id
     # book_in_db = BookInDB(**book.dict(), id=current_id)
     # books_db[current_id] = book_in_db
@@ -28,14 +30,14 @@ async def add_book(book: Book) -> Dict:
 
 
 # Эндпоинт для получения списка всех книг
-@router.get("/books", status_code=status.HTTP_200_OK)
+@books_router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_books() -> list[BookInDB]:
     books = await BooksRepository.find_all()
     return books
 
 
 # Эндпоинт для получения книги по ID
-@router.get("/books/{book_id}")
+@books_router.get("/{book_id}")
 async def get_book(book_id: int) -> BookInDB:
     book = await BooksRepository.find_id(book_id)
     if book is None:
@@ -47,8 +49,10 @@ async def get_book(book_id: int) -> BookInDB:
 
 
 # Эндпоинт для обновления книги
-@router.put("/books/{book_id}")
-async def update_book(book_id: int, book: Book) -> Dict:
+@books_router.put("/{book_id}")
+async def update_book(
+    book_id: int, book: Annotated[Book, Depends()]
+) -> Dict:
     if await BooksRepository.find_id(book_id) is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -66,7 +70,7 @@ async def update_book(book_id: int, book: Book) -> Dict:
 
 
 # Эндпоинт для удаления книги
-@router.delete("/books/{book_id}")
+@books_router.delete("/{book_id}")
 async def delete_book(book_id: int) -> Dict:
     if await BooksRepository.find_id(book_id) is None:
         raise HTTPException(
