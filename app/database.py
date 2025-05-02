@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import ForeignKey
 
 
 engine = create_async_engine("sqlite+aiosqlite:///tasks.db")
@@ -29,6 +30,17 @@ class UsersTable(Base):
     email: Mapped[str]
     password_hash: Mapped[str]
     registration_date: Mapped[str]
+
+
+class EntriesTable(Base):
+    __tablename__ = "entries"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    book_id: Mapped[int] = mapped_column(ForeignKey("books.id"))
+    status: Mapped[str]
+    score: Mapped[int]
+    review: Mapped[str]
 
 
 async def create_tables():

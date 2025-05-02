@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from app.database import create_tables, delete_tables
 from app.routers.books_router import books_router
 from app.routers.users_router import users_router
+from app.routers.entries_router import entries_router
 
 
 @asynccontextmanager
@@ -19,3 +20,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(books_router)
 app.include_router(users_router)
+app.include_router(entries_router)

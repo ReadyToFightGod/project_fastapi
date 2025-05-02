@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas import UserNew, UserInDB
 from app.repositories.users_repository import UsersRepository
 
-users_router = APIRouter(prefix="/users")
+users_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @users_router.post("/", status_code=status.HTTP_201_CREATED)

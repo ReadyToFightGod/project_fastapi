@@ -6,7 +6,7 @@ from app.schemas import Book, BookInDB
 from app.repositories.books_repository import BooksRepository
 
 
-books_router = APIRouter(prefix="/books")
+books_router = APIRouter(prefix="/books", tags=["Books"])
 
 
 # "База данных" - список книг в памяти

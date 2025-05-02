@@ -1,6 +1,7 @@
 # Модель книги с использованием Pydantic
+from enum import StrEnum
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class Book(BaseModel):
@@ -31,3 +32,31 @@ class UserInDB(User):
     registration_date: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class EntryStatus(StrEnum):
+    PLAN_TO_READ = "Plan to read"
+    READING = "Reading"
+    READ = "Read"
+    DROPPED = "Dropped"
+
+
+class EntryContent(BaseModel):
+    status: EntryStatus
+    score: int | None = Field(None, ge=0, le=10)
+    review: str | None = None
+
+
+class Entry(EntryContent):
+    book_id: int
+    user_id: int
+
+
+class EntryInDB(Entry):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class EntryUpdate(EntryContent):
+    id: int
