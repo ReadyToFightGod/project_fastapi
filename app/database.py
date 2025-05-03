@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import ForeignKey
+from app.config import db_path
 
 
-engine = create_async_engine("sqlite+aiosqlite:///tasks.db")
+engine = create_async_engine("sqlite+aiosqlite:///" + db_path)
 
 new_session = async_sessionmaker(engine, expire_on_commit=False)
 

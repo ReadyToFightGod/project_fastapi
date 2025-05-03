@@ -23,7 +23,7 @@ async def register_user(
     return {"user_id": user_id}
 
 
-@auth_router.post("/login", status_code=status.HTTP_202_ACCEPTED)
+@auth_router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(
     auth_data: Annotated[AuthData, Depends()]
 ) -> dict:
