@@ -4,7 +4,6 @@ from app.database import new_session
 from app.schemas import UserNew, UserInDB, AuthData
 from app.database import UsersTable
 from sqlalchemy import select, delete, update
-from hashlib import sha256
 from datetime import datetime
 
 
@@ -80,7 +79,15 @@ class UsersRepository:
             user_data = result.scalar_one_or_none()
             if user_data is None:
                 return None
-            print(user_data.__dict__)
+            return UserInDB.model_validate(user_data)
+
+    @classmethod
+    async def get_username_data(cls, username: str) -> UserInDB:
+        async with new_session() as session:
+            check_username_exists(session, username, True)
+            query = select(UsersTable).where(UsersTable.user_name == username)
+            result = await session.execute(query)
+            user_data = result.scalar_one_or_none()
             return UserInDB.model_validate(user_data)
 
     @classmethod

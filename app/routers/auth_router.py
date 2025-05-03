@@ -2,8 +2,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.repositories.users_repository import UsersRepository
-from app.routers.users_router import users_router
-from app.schemas import UserNew, AuthData
+from app.schemas import UserNew, AuthData, UserInDB
+from app.auth import create_access_token, get_token_user
 
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentification"])
@@ -25,7 +25,7 @@ async def register_user(
 
 @auth_router.post("/login", status_code=status.HTTP_202_ACCEPTED)
 async def login_user(
-    auth_data: AuthData
+    auth_data: Annotated[AuthData, Depends()]
 ) -> dict:
     try:
         authorized = await UsersRepository.authorize_user(auth_data)
@@ -35,9 +35,19 @@ async def login_user(
             detail=e.args[0]
         )
     if authorized:
-        return {"message": "your are authorized"}
+        auth_token = create_access_token(auth_data.username)
+        return {
+            "access_token": auth_token,
+            "token_type": "bearer"}
     else:
         return {"message": "something went wrong"}
+
+
+@auth_router.get("/active_user", status_code=status.HTTP_200_OK)
+async def get_active_user(token: str) -> UserInDB:
+    username = get_token_user(token)
+    user_data = await UsersRepository.get_username_data(username)
+    return user_data
 
 
 @auth_router.delete("/{user_id}",
