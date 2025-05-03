@@ -1,6 +1,7 @@
 import string
+from app.auth import get_password_hash, verify_password
 from app.database import new_session
-from app.schemas import UserNew, UserInDB
+from app.schemas import UserNew, UserInDB, AuthData
 from app.database import UsersTable
 from sqlalchemy import select, delete, update
 from hashlib import sha256
@@ -10,11 +11,15 @@ from datetime import datetime
 ALLOWED_USERNAME_LETTERS = set(string.ascii_letters + string.digits + "-_")
 
 
-async def check_username_exists(session, username: str) -> bool:
+async def check_username_exists(session, username: str,
+                                should_exist: bool):
     query = select(UsersTable).where(UsersTable.user_name == username)
     result = (await session.execute(query)).scalar_one_or_none()
-    if result is not None:
+    exists = result is not None
+    if exists and not should_exist:
         raise ValueError(f"User with name {username} already exists.")
+    elif should_exist and not exists:
+        raise ValueError(f"User with name {username} does not exist.")
 
 
 def check_username_correct(username: str) -> bool:
@@ -30,11 +35,9 @@ class UsersRepository:
     async def add_user(csl, data: UserNew) -> int:
         async with new_session() as session:
             check_username_correct(data.user_name)
-            await check_username_exists(session, data.user_name)
+            await check_username_exists(session, data.user_name, False)
             user_dict = data.model_dump()
-            user_dict["password_hash"] = \
-                sha256(bytes(user_dict["password"], encoding="utf8"))\
-                .hexdigest()
+            user_dict["password_hash"] = get_password_hash(data.password)
             del user_dict["password"]
             user_dict["registration_date"] = datetime.now()
             new_user = UsersTable(**user_dict)
@@ -42,6 +45,21 @@ class UsersRepository:
             await session.flush()
             await session.commit()
             return new_user.id
+
+    @classmethod
+    async def authorize_user(cls, data: AuthData) -> bool:
+        async with new_session() as session:
+            query = select(UsersTable)\
+                .where(UsersTable.user_name == data.username)
+            user = (await session.execute(query)).scalar_one_or_none()
+            if user is None:
+                raise ValueError(
+                    f"User with name {data.username} does not exist.")
+            if verify_password(data.password, user.password_hash):
+                return True
+            else:
+                raise ValueError(
+                    f"Wrong password for user {data.username}")
 
     @classmethod
     async def get_username_list(cls) -> list[dict]:

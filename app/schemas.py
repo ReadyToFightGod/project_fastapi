@@ -16,6 +16,11 @@ class BookInDB(Book):
     model_config = ConfigDict(from_attributes=True)
 
 
+class AuthData(BaseModel):
+    username: str
+    password: str
+
+
 class User(BaseModel):
     user_name: str
     real_name: str
