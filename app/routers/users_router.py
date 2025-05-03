@@ -11,7 +11,13 @@ users_router = APIRouter(prefix="/users", tags=["Users"])
 async def add_user(
     user: Annotated[UserNew, Depends()]
 ) -> dict:
-    user_id = await UsersRepository.add_user(user)
+    try:
+        user_id = await UsersRepository.add_user(user)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_418_IM_A_TEAPOT,
+            detail=e.args[0],
+        )
     return {"user_id": user_id}
 
 

@@ -1,6 +1,6 @@
 
 from app.database import new_session
-from app.schemas import Entry, EntryInDB, EntryContent
+from app.schemas import Entry, EntryContent
 from app.database import EntriesTable, BooksTable, UsersTable
 from sqlalchemy import select, delete, update
 

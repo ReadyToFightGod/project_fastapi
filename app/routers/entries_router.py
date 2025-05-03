@@ -32,6 +32,7 @@ async def delte_entry(entry_id: int) -> dict:
         )
     return {"message": f"Entry with id {entry_id} deleted"}
 
+
 @entries_router.patch("/{entry_id}", status_code=status.HTTP_202_ACCEPTED)
 async def update_entry(
     entry_id: int, data: Annotated[EntryContent, Depends()]
