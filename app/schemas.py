@@ -35,6 +35,7 @@ class UserInDB(User):
     id: int
     password_hash: str
     registration_date: datetime
+    is_moderator: bool
 
     model_config = ConfigDict(from_attributes=True)
 

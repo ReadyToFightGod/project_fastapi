@@ -61,6 +61,25 @@ class UsersRepository:
                     f"Wrong password for user {data.username}")
 
     @classmethod
+    async def set_username_moderator(cls, username: str, is_moderator: bool):
+        async with new_session() as session:
+            await check_username_exists(session, username, True)
+            query = update(UsersTable)\
+                .where(UsersTable.user_name == username)\
+                .values(is_moderator=is_moderator)
+            await session.execute(query)
+            await session.commit()
+
+    @classmethod
+    async def username_is_moderator(cls, username: str) -> bool:
+        async with new_session() as session:
+            await check_username_exists(session, username, True)
+            query = select(UsersTable)\
+                .where(UsersTable.user_name == username)
+            user = (await session.execute(query)).scalar_one()
+            return user.is_moderator
+
+    @classmethod
     async def get_username_list(cls) -> list[dict]:
         async with new_session() as session:
             query = select(UsersTable)
@@ -94,6 +113,14 @@ class UsersRepository:
     async def delete_user(cls, user_id: int) -> None:
         async with new_session() as session:
             query = delete(UsersTable).where(UsersTable.id == user_id)
+            print(query)
+            await session.execute(query)
+            await session.commit()
+
+    @classmethod
+    async def delete_username(cls, username: str) -> None:
+        async with new_session() as session:
+            query = delete(UsersTable).where(UsersTable.user_name == username)
             print(query)
             await session.execute(query)
             await session.commit()

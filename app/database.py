@@ -1,10 +1,10 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import ForeignKey
-from app.config import db_path
+from app.config import settings
 
 
-engine = create_async_engine("sqlite+aiosqlite:///" + db_path)
+engine = create_async_engine("sqlite+aiosqlite:///" + settings.db_path)
 
 new_session = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -26,11 +26,12 @@ class UsersTable(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_name: Mapped[str]
+    user_name: Mapped[str] = mapped_column(unique=True)
     real_name: Mapped[str]
     email: Mapped[str]
     password_hash: Mapped[str]
     registration_date: Mapped[str]
+    is_moderator: Mapped[bool] = mapped_column(default=False)
 
 
 class EntriesTable(Base):

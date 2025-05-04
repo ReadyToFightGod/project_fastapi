@@ -1,19 +1,10 @@
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
-from pydantic_settings import BaseSettings, SettingsConfigDict
 import jwt
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 
-
-class JWTSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file="jwtsettings.env")
-    secret_key: str
-    algo: str
-    access_token_expire_minutes: int
-
-
-settings = JWTSettings()
+from app.config import settings
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

@@ -50,15 +50,9 @@ async def get_active_user(token: str) -> UserInDB:
     return user_data
 
 
-@auth_router.delete("/{user_id}",
+@auth_router.delete("/active_user",
                     status_code=status.HTTP_202_ACCEPTED)
-async def delete_user(
-    user_id: int
-) -> dict:
-    if await UsersRepository.get_user_data(user_id) is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": f"User with id {user_id} does not exits."}
-        )
-    await UsersRepository.delete_user(user_id)
-    return {"message": f"Successfully deleted user with id {user_id}"}
+async def delete_user(token: str) -> dict:
+    username = get_token_user(token)
+    await UsersRepository.delete_username(username)
+    return {"message": f"Successfully deleted user {username}"}
