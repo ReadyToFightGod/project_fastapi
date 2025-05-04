@@ -80,7 +80,7 @@ async def update_book(
     }
 
 
-@books_router.delete("/{book_id}")
+@books_router.delete("/{book_id}", status_code=status.HTTP_202_ACCEPTED)
 async def delete_book(token: str, book_id: int) -> dict:
     await check_token_is_mod(token)
     if await BooksRepository.find_id(book_id) is None:

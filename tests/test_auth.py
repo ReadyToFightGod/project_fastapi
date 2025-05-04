@@ -1,12 +1,7 @@
 from fastapi.testclient import TestClient
-import os
 import faker
 from app.config import settings
-settings.db_path = "test.db"  # settings ignores .env file in test dir
 from app.main import app  # noqa: E402
-
-if os.path.exists(settings.db_path):
-    os.remove(settings.db_path)
 
 # use with statement to trigger lifespan
 with TestClient(app) as client:
@@ -73,4 +68,4 @@ with TestClient(app) as client:
         response = client.get("auth/active_user",
                               params={"token": client.admin_token})
         assert response.status_code == 200
-        assert response.json()["is_moderator"] == True
+        assert response.json()["is_moderator"]
