@@ -54,6 +54,15 @@ class EntriesRepository:
             return entry
 
     @classmethod
+    async def get_entries_book_id(cls, book_id: int) -> list[EntriesTable]:
+        async with new_session() as session:
+            await check_book_exists(session, book_id)
+            query = select(EntriesTable)\
+                .where(EntriesTable.book_id == book_id)
+            entry = (await session.execute(query)).scalars().all()
+            return entry
+
+    @classmethod
     async def get_entry_owner(cls, entry_id) -> str:
         async with new_session() as session:
             await check_entry_exists(session, entry_id)

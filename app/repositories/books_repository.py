@@ -1,6 +1,7 @@
 from app.database import new_session
-from app.schemas import Book
+from app.schemas import Book, BookStats, EntryStatus, EntryInDB
 from app.database import BooksTable
+from app.repositories.entries_repository import EntriesRepository
 from sqlalchemy import select, delete, update
 
 
@@ -48,3 +49,28 @@ class BooksRepository:
             print(query)
             await session.execute(query)
             await session.commit()
+
+    @classmethod
+    async def get_book_stats(cls, book_id: int) -> None:
+        entries = await EntriesRepository.get_entries_book_id(book_id)
+        new_stats = BookStats()
+        score_sum = 0
+        for entry in entries:
+            entry = EntryInDB.model_validate(entry)
+            new_stats.entries += 1
+            if entry.score is not None:
+                new_stats.ratings += 1
+                score_sum += entry.score
+            if entry.review is not None:
+                new_stats.reviews += 1
+            match entry.status:
+                case EntryStatus.PLAN_TO_READ:
+                    new_stats.plan_to_read += 1
+                case EntryStatus.READING:
+                    new_stats.reading += 1
+                case EntryStatus.READ:
+                    new_stats.read += 1
+                case EntryStatus.DROPPED:
+                    new_stats.dropped += 1
+        new_stats.mean_score = score_sum / new_stats.ratings
+        return new_stats

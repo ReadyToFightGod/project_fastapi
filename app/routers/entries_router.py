@@ -43,6 +43,15 @@ async def get_user_entries(username: str) -> list[EntryInDB]:
     return [EntryInDB.model_validate(entry) for entry in entries]
 
 
+@entries_router.get("/book/{book_id}", status_code=status.HTTP_200_OK)
+async def get_book_entries(book_id: int) -> list[EntryInDB]:
+    try:
+        entries = await EntriesRepository.get_entries_book_id(book_id)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, e.args[0])
+    return [EntryInDB.model_validate(entry) for entry in entries]
+
+
 @entries_router.delete("/{entry_id}", status_code=status.HTTP_202_ACCEPTED)
 async def delte_entry(token: str, entry_id: int) -> dict:
     token_user = get_token_user(token)

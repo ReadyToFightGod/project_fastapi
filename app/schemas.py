@@ -16,6 +16,17 @@ class BookInDB(Book):
     model_config = ConfigDict(from_attributes=True)
 
 
+class BookStats(BaseModel):
+    entries: int = 0
+    ratings: int = 0
+    mean_score: float | None = None
+    reviews: int = 0
+    plan_to_read: int = 0
+    reading: int = 0
+    read: int = 0
+    dropped: int = 0
+
+
 class AuthData(BaseModel):
     username: str
     password: str

@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
 
-from app.schemas import Book, BookInDB
+from app.schemas import Book, BookInDB, BookStats
 from app.repositories.books_repository import BooksRepository
 from app.repositories.users_repository import UsersRepository
 from app.auth import get_token_user
@@ -46,6 +46,15 @@ async def get_book(book_id: int) -> BookInDB:
             detail={"error": f"Book with id {book_id} was not found"}
         )
     return book
+
+
+@books_router.get("/stats/{book_id}")
+async def get_book_stats(book_id: int) -> BookStats:
+    try:
+        book_stats = await BooksRepository.get_book_stats(book_id)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, e.args[0])
+    return book_stats
 
 
 @books_router.put("/{book_id}")
