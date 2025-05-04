@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 import faker
 import random
 from app.config import settings
-from app.main import app  # noqa: E402
+from app.main import app
 
 # use with statement to trigger lifespan
 with TestClient(app) as client:

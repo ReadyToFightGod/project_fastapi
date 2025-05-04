@@ -22,7 +22,7 @@ async def add_entry(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=e.args[0],
         )
-    return {"Entry id": entry_id}
+    return {"entry_id": entry_id}
 
 
 @entries_router.get("/{entry_id}", status_code=status.HTTP_200_OK)
