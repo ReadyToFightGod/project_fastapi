@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, status
 
-from app.schemas import UserInDB
 from app.repositories.users_repository import UsersRepository
 from app.auth import get_token_user
+from app.config import settings
 
 users_router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -17,7 +17,7 @@ async def get_users_list() -> list[dict]:
 async def get_user(moderator_token: str,
                    username: str,
                    promote: bool = True) -> dict:
-    if username == "admin":
+    if username == settings.admin_username:
         raise HTTPException(status.HTTP_403_FORBIDDEN,
                             "Administrator user can't be promoted or demoted")
     mod_name = get_token_user(moderator_token)

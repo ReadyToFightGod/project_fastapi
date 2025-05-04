@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     algo: str
     access_token_expire_minutes: int
     db_path: str
+    admin_username: str
+    admin_real_name: str
+    admin_email: str
+    admin_password: str
 
 
 settings = Settings()

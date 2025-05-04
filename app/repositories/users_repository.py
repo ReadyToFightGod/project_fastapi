@@ -103,7 +103,7 @@ class UsersRepository:
     @classmethod
     async def get_username_data(cls, username: str) -> UserInDB:
         async with new_session() as session:
-            check_username_exists(session, username, True)
+            await check_username_exists(session, username, True)
             query = select(UsersTable).where(UsersTable.user_name == username)
             result = await session.execute(query)
             user_data = result.scalar_one_or_none()
