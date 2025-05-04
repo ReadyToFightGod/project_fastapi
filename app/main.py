@@ -12,8 +12,8 @@ from app.routers.auth_router import auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await delete_tables()
-    print("Database was cleared")
+    # await delete_tables()
+    # print("Database was cleared")
     await create_tables()
     print("Database ready for work")
     admin = UserNew(

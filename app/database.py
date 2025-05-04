@@ -38,11 +38,11 @@ class EntriesTable(Base):
     __tablename__ = "entries"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    username: Mapped[int] = mapped_column(ForeignKey("users.user_name"))
     book_id: Mapped[int] = mapped_column(ForeignKey("books.id"))
     status: Mapped[str]
-    score: Mapped[int]
-    review: Mapped[str]
+    score: Mapped[int] = mapped_column(nullable=True, default=None)
+    review: Mapped[str] = mapped_column(nullable=True, default=None)
 
 
 async def create_tables():

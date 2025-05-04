@@ -55,11 +55,11 @@ class EntryContent(BaseModel):
 
 class Entry(EntryContent):
     book_id: int
-    user_id: int
 
 
 class EntryInDB(Entry):
     id: int
+    username: str
 
     model_config = ConfigDict(from_attributes=True)
 
